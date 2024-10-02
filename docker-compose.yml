@@ -13,8 +13,21 @@ services:
     ports:
       - '${PORT}:${PORT}'
     networks:
-      - citidom
+      - traefik_public
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik_public
+        - traefik.constraint-label=traefik_public
+        - traefik.http.routers.server-http.rule=Host(`tomassuxx.ru`)
+        - traefik.http.routers.server-http.entrypoints=http
+        - traefik.http.routers.server-http.middlewares=https-redirect
+        - traefik.http.routers.server-https.rule=Host(`tomassuxx.ru`)
+        - traefik.http.routers.server-https.entrypoints=https
+        - traefik.http.routers.server-https.tls=true
+        - traefik.http.routers.server-https.tls.certresolver=le
+        - traefik.http.services.server.loadbalancer.server.port=80
 
 networks:
-  citidom:
+  traefik_public:
     external: true
