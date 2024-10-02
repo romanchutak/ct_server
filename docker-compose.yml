@@ -1,0 +1,20 @@
+services:
+  server:
+    container_name: ct_server
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: production
+    command: >
+      sh -c "npm run start:prod"
+    env_file:
+      - ./.env.production
+    ports:
+      - '${PORT}:${PORT}'
+    networks:
+      - citidom
+
+networks:
+  citidom:
+    external: true
