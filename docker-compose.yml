@@ -1,32 +1,20 @@
 services:
   server:
-    container_name: ct_server
-    restart: on-failure
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      target: production
+    image: server-server:latest
     command: >
       sh -c "npm run start:prod"
     env_file:
-      - ./.env.production
+      - ./.env
     ports:
-      - '${PORT}:${PORT}'
+      - '7125:7125'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server.rule=Host(`api.tomassuxx.ru`)"
+      - "traefik.http.routers.server.entrypoints=web"
+      - 'traefik.http.routers.server.service=server'
+      - "traefik.http.services.server.loadbalancer.server.port=7125"
     networks:
       - traefik_public
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.docker.network=traefik_public
-        - traefik.constraint-label=traefik_public
-        - traefik.http.routers.server-http.rule=Host(`tomassuxx.ru`)
-        - traefik.http.routers.server-http.entrypoints=http
-        - traefik.http.routers.server-http.middlewares=https-redirect
-        - traefik.http.routers.server-https.rule=Host(`tomassuxx.ru`)
-        - traefik.http.routers.server-https.entrypoints=https
-        - traefik.http.routers.server-https.tls=true
-        - traefik.http.routers.server-https.tls.certresolver=le
-        - traefik.http.services.server.loadbalancer.server.port=80
 
 networks:
   traefik_public:
