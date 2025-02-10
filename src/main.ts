@@ -11,11 +11,15 @@ dotenv.config();
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    // const configService = app.get(ConfigService);
+    const configService = app.get(ConfigService);
 
-    // app.enableCors(configService.get<TCorsConfig>('cors'));
+    app.enableCors(configService.get<TCorsConfig>('cors'));
 
-    await app.listen(3000);
+    await app.listen(configService.get('port', 7000), () =>
+        console.log(
+            'Server is started ON PORT: ' + configService.get('port', 7000),
+        ),
+    );
 }
 
 bootstrap();
